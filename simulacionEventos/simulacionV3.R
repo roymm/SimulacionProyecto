@@ -58,17 +58,27 @@ for (mes in 1:12) {
       reservasGraduacion[tamano_salon, mesReserva] <- reservasGraduacion[tamano_salon, mesReserva] + 1
     }
     
-    ganancias <- ganancias + ((precioBoda[1] - costos[1]) * reservasBodas[1, mes])
-    ganancias <- ganancias + ((precioBoda[2] - costos[2]) * reservasBodas[2, mes])
-    ganancias <- ganancias + ((precioBoda[3] - costos[3]) * reservasBodas[3, mes])
-    ganancias <- ganancias + ((precioCumple[1] - costos[1]) * reservasCumple[1, mes])
-    ganancias <- ganancias + ((precioCumple[2] - costos[2]) * reservasCumple[2, mes])
-    ganancias <- ganancias + ((precioCumple[3] - costos[3]) * reservasCumple[3, mes])
-    ganancias <- ganancias + ((precioGraduacion[1] - costos[1]) * reservasGraduacion[1, mes])
-    ganancias <- ganancias + ((precioGraduacion[2] - costos[2]) * reservasGraduacion[2, mes])
-    ganancias <- ganancias + ((precioGraduacion[3] - costos[3]) * reservasGraduacion[3, mes])
-    
   }
+  
+  ganancias <- ganancias + ((precioBoda[1] - costos[1]) * reservasBodas[1, mes])
+  reservasBodas[1, mes] <- 0
+  ganancias <- ganancias + ((precioBoda[2] - costos[2]) * reservasBodas[2, mes])
+  reservasBodas[2, mes] <- 0
+  ganancias <- ganancias + ((precioBoda[3] - costos[3]) * reservasBodas[3, mes])
+  reservasBodas[3, mes] <- 0
+  ganancias <- ganancias + ((precioCumple[1] - costos[1]) * reservasCumple[1, mes])
+  reservasCumple[1, mes] <- 0
+  ganancias <- ganancias + ((precioCumple[2] - costos[2]) * reservasCumple[2, mes])
+  reservasCumple[2, mes] <- 0
+  ganancias <- ganancias + ((precioCumple[3] - costos[3]) * reservasCumple[3, mes])
+  reservasCumple[3, mes] <- 0
+  ganancias <- ganancias + ((precioGraduacion[1] - costos[1]) * reservasGraduacion[1, mes])
+  reservasGraduacion[1, mes] <- 0
+  ganancias <- ganancias + ((precioGraduacion[2] - costos[2]) * reservasGraduacion[2, mes])
+  reservasGraduacion[2, mes] <- 0
+  ganancias <- ganancias + ((precioGraduacion[3] - costos[3]) * reservasGraduacion[3, mes])
+  reservasGraduacion[3, mes] <- 0
+
   ganancias <- ganancias - impuestos
   print(ganancias)
 }

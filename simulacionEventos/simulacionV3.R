@@ -3,14 +3,15 @@
 # Roy Muñoz Miranda B54911
 # Isaac Madrigal Silva C14387
 
-# Precios de paquetes por evento (cambiando precios de trabajo escrito)
+
+# Precios de paquetes por evento
 precioBoda <- c(6000000, 10000000, 17000000)
 precioCumple <- c(4000000, 6000000, 12000000)
 precioGraduacion <- c(0, 8000000, 15000000)
 
 # Costos
 costos <- c(2760000, 4629000, 10246000)
-impuestos <- 3208333 + 4583333 + 6875000  # Se cambian los del trabajo
+impuestos <- 3208333 + 4583333 + 6875000
 
 # Matrices de reservas
 reservasBodas <- matrix(0,3,12)
@@ -21,23 +22,25 @@ reservasGraduacion <- matrix(0,3,12)
 probabilidadBodas <- c(3,2,0,0,0,0,0,0,-2,-2,0,3)
 probabilidadGraduacion <- c(-2,-3,-3,-3,-3,0,0,-1,-3,-3,-1,3)
 
-
 inversionInicial <- 330000000
 ganancias <- 0
 
 
 simulacion <- function() {
+  # Se inicializan los datos
   ganancias <<- inversionInicial * -1
   reservasBodas[] <<- 0
   reservasCumple[] <<- 0
   reservasGraduacion[] <<- 0
   
+  # Se calculan las ganancias de 3 años
   for (año in 1:3) {
     simularAño()
   }
 }
 
 
+# Calcula las ganancias por 12 meses
 simularAño <- function() {
   for (mes in 1:12) {
     calcularGanancias(mes)
@@ -61,16 +64,19 @@ calcularGanancias <- function(mes) {
     reservasGraduacion[salon, mes] <<- 0
   }
   
+  # Cada mes, se le restan los impuestos a las ganancias
   ganancias <<- ganancias - impuestos
 }
 
 
 # Intenta reservar un evento, recibe el mes actual
 reservar <- function(mes) {
-  tamano_salon <- sample(c(1,2,3), 1, T, c(0.3, 0.4, 0.3))
   probEventos <- c(5,5,5)  # Boda, Cumple, Graduacion
   mesReserva <- 0
+  # Se determina el tamño del salón que será reservado
+  tamano_salon <- sample(c(1,2,3), 1, T, c(0.3, 0.4, 0.3))
   
+  # Se determina el mes en el que el salón será reservado
   if (tamano_salon == 1) {
     mesReserva <- sample(c(1,2), 1, T)
   } else if (tamano_salon == 2) {
@@ -78,19 +84,17 @@ reservar <- function(mes) {
   } else {
     mesReserva <- sample(c(9,10,11,12), 1, T)
   }
-  
   mesReserva <- ((mesReserva + mes) %% 12) + 1
 
-  # Aquí se revisa si se puede reservar el salón en el mes solicitado
-  
+  # Se revisa si se puede reservar el salón en el mes solicitado
+  # Cada salón puede ser reservado un máximo de 4 veces por mes
   if (reservasBodas[tamano_salon, mesReserva] +
       reservasGraduacion[tamano_salon, mesReserva] +
-      reservasCumple[tamano_salon, mesReserva] == 4) {
-    return (NULL)
+      reservasCumple[tamano_salon, mesReserva] == 4) {  
+    return (NULL)  # Si no se puede reservar, se pierde el cliente
   }
-  
-  # Aquí se ajustaría la proporción de cada tipo de evento según el mes
-  
+
+  # Se ajusta la proporción de cada tipo de evento según el mes
   probEventos[1] <- probEventos[1] + probabilidadBodas[mesReserva]
   probEventos[3] <- probEventos[3] + probabilidadGraduacion[mesReserva]
 
@@ -98,7 +102,7 @@ reservar <- function(mes) {
   if (tamano_salon == 1) {
     probEventos[1] <- probEventos[1] + 1  # Más probable de que sea boda
     probEventos[2] <- probEventos[2] + 2  # Aún más probable de que sea cumpleaños
-    probEventos[3] <- 0  # No puede ser graduación
+    probEventos[3] <- 0                   # No puede ser graduación
   } else if (tamano_salon == 2) {
     probEventos[1] <- probEventos[1] + 2  # Aún más probable de que sea boda
     probEventos[2] <- probEventos[2] + 1  # Más probable de que sea cumpleaños
@@ -108,8 +112,7 @@ reservar <- function(mes) {
     probEventos[3] <- probEventos[3] + 2  # Aún más probable de que sea graduación
   }
 
-
-  probEventos <- probEventos / sum(probEventos)
+  # Se determina el tipo de evento
   tipoEvento <-  sample(c(1,2,3), 1, T, probEventos)
   
   # Se le suma 1 a la cantidad de reservas

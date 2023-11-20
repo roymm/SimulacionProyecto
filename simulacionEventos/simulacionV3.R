@@ -1,4 +1,7 @@
-set.seed(123)
+# Mariela Valerio Sáenz C18049
+# Juan Carlos Sequeira Jiménez B68330
+# Roy Muñoz Miranda B54911
+# Isaac Madrigal Silva C14387
 
 # Precios de paquetes por evento (cambiando precios de trabajo escrito)
 precioBoda <- c(6000000, 10000000, 17000000)
@@ -14,6 +17,11 @@ reservasBodas <- matrix(0,3,12)
 reservasCumple <- matrix(0,3,12)
 reservasGraduacion <- matrix(0,3,12)
 
+# Vectores de probabilidad por mes
+probabilidadBodas <- c(3,2,0,0,0,0,0,0,-2,-2,0,3)
+probabilidadGraduacion <- c(-2,-3,-3,-3,-3,0,0,-1,-3,-3,-1,3)
+
+
 inversionInicial <- 330000000
 ganancias <- 0
 
@@ -24,7 +32,7 @@ simulacion <- function() {
   reservasCumple[] <<- 0
   reservasGraduacion[] <<- 0
   
-  for (año in 1:1) {
+  for (año in 1:3) {
     simularAño()
   }
 }
@@ -75,7 +83,16 @@ reservar <- function(mes) {
 
   # Aquí se revisa si se puede reservar el salón en el mes solicitado
   
+  if (reservasBodas[tamano_salon, mesReserva] +
+      reservasGraduacion[tamano_salon, mesReserva] +
+      reservasCumple[tamano_salon, mesReserva] == 4) {
+    return (NULL)
+  }
+  
   # Aquí se ajustaría la proporción de cada tipo de evento según el mes
+  
+  probEventos[1] <- probEventos[1] + probabilidadBodas[mesReserva]
+  probEventos[3] <- probEventos[3] + probabilidadGraduacion[mesReserva]
 
   # Se ajusta la proporción de cada tipo de evento según el tamaño del salón
   if (tamano_salon == 1) {

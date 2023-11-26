@@ -3,6 +3,7 @@
 # Roy Muñoz Miranda B54911
 # Isaac Madrigal Silva C14387
 
+set.seed(123)
 
 # Precios de paquetes por evento
 precioBoda <- c(6000000, 10000000, 17000000)
@@ -18,9 +19,13 @@ reservasBodas <- matrix(0,3,12)
 reservasCumple <- matrix(0,3,12)
 reservasGraduacion <- matrix(0,3,12)
 
+totalBodas <- matrix(0,3,12)
+totalCumple <- matrix(0,3,12)
+totalGraduacion <- matrix(0,3,12)
+
 # Vectores de probabilidad por mes
-probabilidadBodas <- c(3,2,0,0,0,0,0,0,-2,-2,0,3)
-probabilidadGraduacion <- c(-2,-3,-3,-3,-3,0,0,-1,-3,-3,-1,3)
+probabilidadBodas <- c(4,4,0,0,0,0,0,0,-4,-4,0,4)
+probabilidadGraduacion <- c(-2,-4,-4,-4,-4,0,0,-2,-4,-4,-2,4)
 
 inversionInicial <- 330000000
 ganancias <- 0
@@ -32,6 +37,9 @@ simulacion <- function() {
   reservasBodas[] <<- 0
   reservasCumple[] <<- 0
   reservasGraduacion[] <<- 0
+  totalBodas[] <<- 0
+  totalCumple[] <<- 0
+  totalGraduacion[] <<- 0
   
   # Se calculan las ganancias de 3 años
   for (año in 1:3) {
@@ -100,11 +108,10 @@ reservar <- function(mes) {
 
   # Se ajusta la proporción de cada tipo de evento según el tamaño del salón
   if (tamano_salon == 1) {
-    probEventos[1] <- probEventos[1] + 1  # Más probable de que sea boda
-    probEventos[2] <- probEventos[2] + 2  # Aún más probable de que sea cumpleaños
+    probEventos[2] <- probEventos[2] + 3  # Más probable de que sea cumpleaños
     probEventos[3] <- 0                   # No puede ser graduación
   } else if (tamano_salon == 2) {
-    probEventos[1] <- probEventos[1] + 2  # Aún más probable de que sea boda
+    probEventos[1] <- probEventos[1] + 3  # Aún más probable de que sea boda
     probEventos[2] <- probEventos[2] + 1  # Más probable de que sea cumpleaños
   } else {
     probEventos[1] <- probEventos[1] + 1  # Más probable de que sea boda
@@ -118,10 +125,13 @@ reservar <- function(mes) {
   # Se le suma 1 a la cantidad de reservas
   if (tipoEvento == 1) {
     reservasBodas[tamano_salon, mesReserva] <<- reservasBodas[tamano_salon, mesReserva] + 1
+    totalBodas[tamano_salon, mesReserva] <<- totalBodas[tamano_salon, mesReserva] + 1
   } else if (tipoEvento == 2) {
     reservasCumple[tamano_salon, mesReserva] <<- reservasCumple[tamano_salon, mesReserva] + 1
+    totalCumple[tamano_salon, mesReserva] <<- totalCumple[tamano_salon, mesReserva] + 1
   } else {
     reservasGraduacion[tamano_salon, mesReserva] <<- reservasGraduacion[tamano_salon, mesReserva] + 1
+    totalGraduacion[tamano_salon, mesReserva] <<- totalGraduacion[tamano_salon, mesReserva] + 1
   }
 }
 

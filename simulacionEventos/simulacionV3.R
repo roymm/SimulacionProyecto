@@ -2,8 +2,7 @@
 # Juan Carlos Sequeira Jiménez B68330
 # Roy Muñoz Miranda B54911
 # Isaac Madrigal Silva C14387
-
-set.seed(123)
+options(scipen = 999)
 
 # Precios de paquetes por evento
 precioBoda <- c(6000000, 10000000, 17000000)
@@ -14,6 +13,7 @@ precioGraduacion <- c(0, 8000000, 15000000)
 costos <- c(2760000, 4629000, 10246000)
 impuestos <- 3208333 + 4583333 + 6875000
 
+# Número de llegadas para cada escenario
 numLlegadas <- c(5,10,20)
 
 # Matrices de reservas
@@ -21,21 +21,24 @@ reservasBodas <- matrix(0,3,12)
 reservasCumple <- matrix(0,3,12)
 reservasGraduacion <- matrix(0,3,12)
 
+# Número total de reservas cada mes
 totalBodas <- matrix(0,3,12)
 totalCumple <- matrix(0,3,12)
 totalGraduacion <- matrix(0,3,12)
 
-# Vectores de probabilidad por mes
+# Vectores de ajuste por mes
 ajusteBodas <- c(4,4,0,0,0,0,0,0,-4,-4,0,4)
 ajusteGraduacion <- c(-2,-4,-4,-4,-4,0,0,-2,-4,-4,-2,4)
 
 inversionInicial <- 330000000
 ganancias <- 0
+gananciasPorAño <- numeric(3)
 
 
 simulacion <- function(numClientes) {
   # Se inicializan los datos
   ganancias <<- inversionInicial * -1
+  gananciasPorAño <<- 0
   reservasBodas[] <<- 0
   reservasCumple[] <<- 0
   reservasGraduacion[] <<- 0
@@ -46,6 +49,7 @@ simulacion <- function(numClientes) {
   # Se calculan las ganancias de 3 años
   for (año in 1:3) {
     simularAño(numClientes)
+    gananciasPorAño[año] <<- ganancias
   }
 }
 
@@ -137,7 +141,51 @@ reservar <- function(mes) {
   }
 }
 
-hist(totalBodas[1])
 
 
-simulacion(numLlegadas[3])
+# Promedio de las simulaciones
+promedioGananciasPorAño <- c()
+promedioTotalBoda <- c()
+promedioTotalCumple <- c()
+promedioTotalGraduacion <- c()
+promedioCantidadBodas <- 0
+promedioCantidadCumple <- 0
+promedioCantidadGraduacion <- 0
+
+
+# Corre la simulación 10000 veces y calcula el promedio de ganancias y eventos reservados
+obtenerResultados <- function(numClientes) {
+  # Guarda los resultados de cada simulación
+  listaGananciasPorAño <- list()
+  listaTotalBoda <- list()
+  listaTotalCumple <- list()
+  listaTotalGraduacion <- list()
+  #Inicializa los valores
+  promedioGananciasPorAño <<- 0
+  promedioTotalBoda <<- 0
+  promedioTotalCumple <<- 0
+  promedioTotalGraduacion <<- 0
+  promedioCantidadBodas <<- 0
+  promedioCantidadCumple <<- 0
+  promedioCantidadGraduacion <<- 0
+  
+  for (i in 1:10000) {
+    simulacion(numClientes)
+    listaGananciasPorAño <- append(listaGananciasPorAño, list(gananciasPorAño))
+    listaTotalBoda <- append(listaTotalBoda, list(totalBodas))
+    listaTotalCumple <- append(listaTotalCumple, list(totalCumple))
+    listaTotalGraduacion <- append(listaTotalGraduacion, list(totalGraduacion))
+  }
+  
+  # Calcula el promedio de las simulaciones
+  promedioGananciasPorAño <<- colMeans(do.call(rbind, listaGananciasPorAño))
+  promedioTotalBoda <<- colMeans(do.call(rbind, listaTotalBoda))
+  promedioTotalCumple <<- colMeans(do.call(rbind, listaTotalCumple))
+  promedioTotalGraduacion <<- colMeans(do.call(rbind, listaTotalGraduacion))
+  promedioCantidadBodas <<- sum(promedioTotalBoda)
+  promedioCantidadCumple <<- sum(promedioTotalCumple)
+  promedioCantidadGraduacion <<- sum(promedioTotalGraduacion)
+}
+
+
+obtenerResultados(numLlegadas[3])

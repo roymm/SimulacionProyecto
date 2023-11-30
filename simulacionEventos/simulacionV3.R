@@ -2,6 +2,7 @@
 # Juan Carlos Sequeira Jiménez B68330
 # Roy Muñoz Miranda B54911
 # Isaac Madrigal Silva C14387
+
 options(scipen = 999)
 
 # Precios de paquetes por evento
@@ -145,12 +146,12 @@ reservar <- function(mes) {
 
 # Promedio de las simulaciones
 promedioGananciasPorAño <- c()
-promedioTotalBoda <- c()
-promedioTotalCumple <- c()
-promedioTotalGraduacion <- c()
 promedioCantidadBodas <- 0
 promedioCantidadCumple <- 0
 promedioCantidadGraduacion <- 0
+promedioCantidadPequeño <- 0
+promedioCantidadMediano <- 0
+promedioCantidadGrande <- 0
 
 
 # Corre la simulación 10000 veces y calcula el promedio de ganancias y eventos reservados
@@ -162,13 +163,13 @@ obtenerResultados <- function(numClientes) {
   listaTotalGraduacion <- list()
   #Inicializa los valores
   promedioGananciasPorAño <<- 0
-  promedioTotalBoda <<- 0
-  promedioTotalCumple <<- 0
-  promedioTotalGraduacion <<- 0
   promedioCantidadBodas <<- 0
   promedioCantidadCumple <<- 0
   promedioCantidadGraduacion <<- 0
-  
+  promedioCantidadPequeño <<- 0
+  promedioCantidadMediano <<- 0
+  promedioCantidadGrande <<- 0
+
   for (i in 1:10000) {
     simulacion(numClientes)
     listaGananciasPorAño <- append(listaGananciasPorAño, list(gananciasPorAño))
@@ -176,15 +177,25 @@ obtenerResultados <- function(numClientes) {
     listaTotalCumple <- append(listaTotalCumple, list(totalCumple))
     listaTotalGraduacion <- append(listaTotalGraduacion, list(totalGraduacion))
   }
-  
+
   # Calcula el promedio de las simulaciones
   promedioGananciasPorAño <<- colMeans(do.call(rbind, listaGananciasPorAño))
-  promedioTotalBoda <<- colMeans(do.call(rbind, listaTotalBoda))
-  promedioTotalCumple <<- colMeans(do.call(rbind, listaTotalCumple))
-  promedioTotalGraduacion <<- colMeans(do.call(rbind, listaTotalGraduacion))
-  promedioCantidadBodas <<- sum(promedioTotalBoda)
-  promedioCantidadCumple <<- sum(promedioTotalCumple)
-  promedioCantidadGraduacion <<- sum(promedioTotalGraduacion)
+  
+  promedioCantidadBodas <<- mean(sapply(listaTotalBoda, function(matriz) sum(matriz)))
+  promedioCantidadCumple <<- mean(sapply(listaTotalCumple, function(matriz) sum(matriz)))
+  promedioCantidadGraduacion <<- mean(sapply(listaTotalGraduacion, function(matriz) sum(matriz)))
+  
+  promedioCantidadPequeño <<- mean(sapply(listaTotalBoda, function(matriz) sum(matriz[1,])))
+  promedioCantidadPequeño <<- promedioCantidadPequeño + mean(sapply(listaTotalCumple, function(matriz) sum(matriz[1,])))
+  promedioCantidadPequeño <<- promedioCantidadPequeño + mean(sapply(listaTotalGraduacion, function(matriz) sum(matriz[1,])))
+  
+  promedioCantidadMediano <<- mean(sapply(listaTotalBoda, function(matriz) sum(matriz[2,])))
+  promedioCantidadMediano <<- promedioCantidadMediano + mean(sapply(listaTotalCumple, function(matriz) sum(matriz[2,])))
+  promedioCantidadMediano <<- promedioCantidadMediano + mean(sapply(listaTotalGraduacion, function(matriz) sum(matriz[2,])))
+  
+  promedioCantidadGrande <<- mean(sapply(listaTotalBoda, function(matriz) sum(matriz[3,])))
+  promedioCantidadGrande <<- promedioCantidadGrande + mean(sapply(listaTotalCumple, function(matriz) sum(matriz[3,])))
+  promedioCantidadGrande <<- promedioCantidadGrande + mean(sapply(listaTotalGraduacion, function(matriz) sum(matriz[3,])))
 }
 
 
